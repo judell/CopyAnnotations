@@ -1,4 +1,4 @@
-//import * as hlib from '../../hlib/hlib'
+import * as hlib from '../../hlib/hlib'
 
 function logWrite(msg:string) {
   console.log(msg)
@@ -12,6 +12,22 @@ function logAppend(msg:string) {
 
 // main entry point, wired to copy button
 function copy() {
+  let textArea = hlib.getById('urlListContainer') as HTMLTextAreaElement
+  let urlListText = textArea.value
+  let urls = urlListText.split('\n')
+  urls = urls.filter(url => { if (url) { return url } })
+  console.log(urls)
+  urls.forEach(url => {
+    _copy(['a'],[])
+  })
+}
+
+function _copy(replies:any, annotations:any) {
+  let sourceDomainForm = hlib.getById('sourceDomainForm') as HTMLInputElement
+  let sourceDomain = sourceDomainForm.value
+  let destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
+  let destinationDomain = destinationDomainForm.value
+  console.log(sourceDomain, destinationDomain, replies)
 }
 
 let tokenContainer = hlib.getById('tokenContainer')
@@ -20,29 +36,22 @@ hlib.createApiTokenInputForm(tokenContainer)
 let userContainer = hlib.getById('userContainer')
 hlib.createUserInputForm(userContainer)
 
-let argsSourceDomain:hlib.inputFormArgs = {
-  element: hlib.getById('sourceDomainContainer'),
-  name: 'source domain',
-  id: 'sourceDomain',
-  value: '',
-  onchange: '',
-  type: '',
-  msg: 'domain from which to copy (e.g. site1.org)'
-}
-hlib.createNamedInputForm(argsSourceDomain)
+hlib.createFacetInputForm(
+  hlib.getById('sourceDomainContainer'),
+  'sourceDomain',
+  'domain from which to copy (e.g. site1.org)'
+)
 
-let argsDestDomain:hlib.inputFormArgs = {
-  element: hlib.getById('destinationDomainContainer'),
-  name: 'destination domain',
-  id: 'destinationDomain',
-  value: '',
-  onchange: '',
-  type: '',
-  msg: 'domain to which to copy (e.g. site2.net)'
-}
-hlib.createNamedInputForm(argsDestDomain)
+hlib.createFacetInputForm(
+  hlib.getById('destinationDomainContainer'),
+  'destinationDomain',
+  'domain to which to copy (e.g. site1.org)'
+)
 
 /*
+hlib.createGroupInputForm creates a single picker, here we need two. So we create it twice, then
+(after a suitable delay) to adjust their labels, ids, and messages.
+
 From TypeScript's point of view, document.querySelector can return HTMLElement or null.
 With strict checking turned on, all use of the method produces the 'object is possibly null' message.
 I don't want to turn off strict type checking. An alternative is to use the non-null assertion operator, !
@@ -53,7 +62,7 @@ function adjustGroupPicker(groupContainer:string, label:string, id:string, messa
   let picker = document.querySelector(groupContainer)!
   picker.querySelector('.formLabel')!.innerHTML = label
   let select:HTMLSelectElement = picker.querySelector('select')!
-  select.onchange = null
+  select.removeAttribute('onchange')
   select.id = id
   picker.querySelector('.formMessage')!.innerHTML = message
 }
@@ -63,7 +72,7 @@ hlib.createGroupInputForm(sourceGroupContainer)
 setTimeout( function() {
   adjustGroupPicker(
     '#sourceGroupContainer', 
-    'source group', 
+    'sourceGroup', 
     'sourceGroupsList', 
     'group from which to copy annotations')
 }, 500)
@@ -73,21 +82,16 @@ hlib.createGroupInputForm(destinationGroupContainer)
 setTimeout( function() {
   adjustGroupPicker(
     '#destinationGroupContainer', 
-    'destination group', 
+    'destinationGroup', 
     'destinationGroupsList', 
     'group to which to copy annotations')
 }, 500)
 
-let argsLimit:hlib.inputFormArgs = {
-  element: hlib.getById('limitContainer'),
-  name: 'max annotations',
-  id: 'maxAnnotations',
-  value: '',
-  onchange: '',
-  type: '',
-  msg: 'max annotations to copy (use a small number for a sanity check)'
-}
-hlib.createNamedInputForm(argsLimit)
+hlib.createFacetInputForm(
+  hlib.getById('limitContainer'), 
+  'maxAnnotations', 
+  'max annotations to copy (use a small number for testing)'
+)
 
 
 
