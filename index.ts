@@ -12,13 +12,14 @@ function logAppend(msg:string) {
 
 // main entry point, wired to copy button
 function copy() {
+  
   let textArea = hlib.getById('urlListContainer') as HTMLTextAreaElement
   let urlListText = textArea.value
   let urls = urlListText.split('\n')
   urls = urls.filter(url => { if (url) { return url } })
   console.log(urls)
   urls.forEach(url => {
-    _copy(['a'],[])
+    let params = {'uri': url}
   })
 }
 
@@ -68,7 +69,8 @@ function adjustGroupPicker(groupContainer:string, label:string, id:string, messa
 }
 
 let sourceGroupContainer = hlib.getById('sourceGroupContainer')
-hlib.createGroupInputForm(sourceGroupContainer)
+hlib.createGroupInputForm(sourceGroupContainer, 'sourceGroupList')
+
 setTimeout( function() {
   adjustGroupPicker(
     '#sourceGroupContainer', 
@@ -78,7 +80,8 @@ setTimeout( function() {
 }, 500)
 
 let destinationGroupContainer = hlib.getById('destinationGroupContainer')
-hlib.createGroupInputForm(destinationGroupContainer)
+hlib.createGroupInputForm(destinationGroupContainer, 'destinationGroupList')
+
 setTimeout( function() {
   adjustGroupPicker(
     '#destinationGroupContainer', 
