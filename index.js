@@ -35,26 +35,31 @@ var argsDestDomain = {
     msg: 'domain to which to copy (e.g. site2.net)'
 };
 hlib.createNamedInputForm(argsDestDomain);
-var argsSourceGroup = {
-    element: hlib.getById('sourceGroupContainer'),
-    name: 'source group',
-    id: 'sourceGroup',
-    value: '',
-    onchange: '',
-    type: '',
-    msg: 'group from which to copy annotations'
-};
-hlib.createNamedInputForm(argsSourceGroup);
-var argsDestGroup = {
-    element: hlib.getById('destinationGroupContainer'),
-    name: 'destination group',
-    id: 'destinationGroup',
-    value: '',
-    onchange: '',
-    type: '',
-    msg: 'group to which to copy annotations'
-};
-hlib.createNamedInputForm(argsDestGroup);
+/*
+From TypeScript's point of view, document.querySelector can return HTMLElement or null.
+With strict checking turned on, all use of the method produces the 'object is possibly null' message.
+I don't want to turn off strict type checking. An alternative is to use the non-null assertion operator, !
+(see https://hyp.is/BazwXG5YEeib9fdjuAT_GQ/www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html)
+But I'm not sure I like doing that either.
+*/
+function adjustGroupPicker(groupContainer, label, id, message) {
+    var picker = document.querySelector(groupContainer);
+    picker.querySelector('.formLabel').innerHTML = label;
+    var select = picker.querySelector('select');
+    select.onchange = null;
+    select.id = id;
+    picker.querySelector('.formMessage').innerHTML = message;
+}
+var sourceGroupContainer = hlib.getById('sourceGroupContainer');
+hlib.createGroupInputForm(sourceGroupContainer);
+setTimeout(function () {
+    adjustGroupPicker('#sourceGroupContainer', 'source group', 'sourceGroupsList', 'group from which to copy annotations');
+}, 500);
+var destinationGroupContainer = hlib.getById('destinationGroupContainer');
+hlib.createGroupInputForm(destinationGroupContainer);
+setTimeout(function () {
+    adjustGroupPicker('#destinationGroupContainer', 'destination group', 'destinationGroupsList', 'group to which to copy annotations');
+}, 500);
 var argsLimit = {
     element: hlib.getById('limitContainer'),
     name: 'max annotations',
@@ -65,6 +70,3 @@ var argsLimit = {
     msg: 'max annotations to copy (use a small number for a sanity check)'
 };
 hlib.createNamedInputForm(argsLimit);
-var destinationDomainContainer = hlib.getById('destinationDomainContainer');
-var sourceGroupContainer = hlib.getById('sourceGroupContainer');
-var destinationGroupContainer = hlib.getById('destinationGroupContainer');

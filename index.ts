@@ -1,11 +1,11 @@
-import * as hlib from '../../hlib/hlib'
+//import * as hlib from '../../hlib/hlib'
 
-function logWrite(msg) {
+function logWrite(msg:string) {
   console.log(msg)
   hlib.getById('viewer').innerHTML = `<div>${msg}</div>`
 }
 
-function logAppend(msg) {
+function logAppend(msg:string) {
   console.log(msg);
   hlib.getById('viewer').innerHTML += `<div>${msg}</div>`
 }
@@ -42,27 +42,41 @@ let argsDestDomain:hlib.inputFormArgs = {
 }
 hlib.createNamedInputForm(argsDestDomain)
 
-let argsSourceGroup:hlib.inputFormArgs = {
-  element: hlib.getById('sourceGroupContainer'),
-  name: 'source group',
-  id: 'sourceGroup',
-  value: '',
-  onchange: '',
-  type: '',
-  msg: 'group from which to copy annotations'
+/*
+From TypeScript's point of view, document.querySelector can return HTMLElement or null.
+With strict checking turned on, all use of the method produces the 'object is possibly null' message.
+I don't want to turn off strict type checking. An alternative is to use the non-null assertion operator, !
+(see https://hyp.is/BazwXG5YEeib9fdjuAT_GQ/www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html)
+But I'm not sure I like doing that either.
+*/
+function adjustGroupPicker(groupContainer:string, label:string, id:string, message:string) {
+  let picker = document.querySelector(groupContainer)!
+  picker.querySelector('.formLabel')!.innerHTML = label
+  let select:HTMLSelectElement = picker.querySelector('select')!
+  select.onchange = null
+  select.id = id
+  picker.querySelector('.formMessage')!.innerHTML = message
 }
-hlib.createNamedInputForm(argsSourceGroup)
 
-let argsDestGroup:hlib.inputFormArgs = {
-  element: hlib.getById('destinationGroupContainer'),
-  name: 'destination group',
-  id: 'destinationGroup',
-  value: '',
-  onchange: '',
-  type: '',
-  msg: 'group to which to copy annotations'
-}
-hlib.createNamedInputForm(argsDestGroup)
+let sourceGroupContainer = hlib.getById('sourceGroupContainer')
+hlib.createGroupInputForm(sourceGroupContainer)
+setTimeout( function() {
+  adjustGroupPicker(
+    '#sourceGroupContainer', 
+    'source group', 
+    'sourceGroupsList', 
+    'group from which to copy annotations')
+}, 500)
+
+let destinationGroupContainer = hlib.getById('destinationGroupContainer')
+hlib.createGroupInputForm(destinationGroupContainer)
+setTimeout( function() {
+  adjustGroupPicker(
+    '#destinationGroupContainer', 
+    'destination group', 
+    'destinationGroupsList', 
+    'group to which to copy annotations')
+}, 500)
 
 let argsLimit:hlib.inputFormArgs = {
   element: hlib.getById('limitContainer'),
@@ -75,9 +89,5 @@ let argsLimit:hlib.inputFormArgs = {
 }
 hlib.createNamedInputForm(argsLimit)
 
-let destinationDomainContainer = hlib.getById('destinationDomainContainer')
 
-let sourceGroupContainer = hlib.getById('sourceGroupContainer')
-
-let destinationGroupContainer = hlib.getById('destinationGroupContainer')
 
