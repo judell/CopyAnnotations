@@ -1,0 +1,70 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://jonudell.info/hlib/hlib.css">
+  <style>
+    body {
+      display: flex;
+      margin-top: 20px;
+    }
+
+    h1 {
+      font-size: 14pt;
+    }
+
+    #viewer {
+      width: 40%;
+      margin-left: 20px;
+    }
+
+    #urlList {
+      width: 50%;
+      margin-left: 40px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="formContainer">
+
+    <h1>
+     Copy annotations from one set of URLs to another
+    </h1>
+
+    <div class="formField" id="userContainer"></div>
+    <div class="formField" id="tokenContainer"></div>
+    <div class="formField" id="sourceDomainContainer"></div>
+    <div class="formField" id="destinationDomainContainer"></div>
+    <div class="formField" id="sourceGroupContainer"></div>
+    <div class="formField" id="destinationGroupContainer"></div>
+    
+    <div><button onclick="copy()">copy</button></div>
+
+    <div class="help">
+      <hr>
+      <p>
+        This tool copies annotations from one domain to another. 
+        Until we can search whole domains, you'll need to provde a list of URLs 
+        that we'll search one by one. 
+        Only top-level annotations will be copied, replies are ignored.  
+      </p>
+    </div>
+
+  </div>
+
+  <div id="urlList">
+    <textarea rows="40" cols="80" id="urlListContainer">Paste URLs here, one per line</textarea>
+  </div>
+
+
+
+  <div id="viewer"></div>
+
+  <script src="https://jonudell.info/hlib/hlib.bundle.js"></script>
+  <script src="./index.js"></script>
+
+</body>
+
+</html>
