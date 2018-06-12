@@ -64,7 +64,16 @@ let argsDestGroup:hlib.inputFormArgs = {
 }
 hlib.createNamedInputForm(argsDestGroup)
 
-
+let argsLimit:hlib.inputFormArgs = {
+  element: hlib.getById('limitContainer'),
+  name: 'max annotations',
+  id: 'maxAnnotations',
+  value: '',
+  onchange: '',
+  type: '',
+  msg: 'max annotations to copy (use a small number for a sanity check)'
+}
+hlib.createNamedInputForm(argsLimit)
 
 let destinationDomainContainer = hlib.getById('destinationDomainContainer')
 

@@ -55,6 +55,16 @@ var argsDestGroup = {
     msg: 'group to which to copy annotations'
 };
 hlib.createNamedInputForm(argsDestGroup);
+var argsLimit = {
+    element: hlib.getById('limitContainer'),
+    name: 'max annotations',
+    id: 'maxAnnotations',
+    value: '',
+    onchange: '',
+    type: '',
+    msg: 'max annotations to copy (use a small number for a sanity check)'
+};
+hlib.createNamedInputForm(argsLimit);
 var destinationDomainContainer = hlib.getById('destinationDomainContainer');
 var sourceGroupContainer = hlib.getById('sourceGroupContainer');
 var destinationGroupContainer = hlib.getById('destinationGroupContainer');
