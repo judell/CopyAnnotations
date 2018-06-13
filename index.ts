@@ -1,4 +1,4 @@
-//import * as hlib from '../../hlib/hlib'
+import * as hlib from '../../hlib/hlib'
 
 function logWrite(msg:string) {
   console.log(msg)
@@ -15,12 +15,15 @@ function copy() {
   let textArea = hlib.getById('urlListContainer') as HTMLTextAreaElement
   let urlListText = textArea.value
   let urls = urlListText.split('\n')
-  urls = urls.filter(url => { if (url) { return url } })
+  urls = urls.filter(url => { 
+    url = url.trim()
+    if (url) { return url } 
+  })
   console.log(urls)
   urls.forEach(url => {
     let sourceGroup = hlib.getSelectedGroup('sourceGroupsList')
     let params:any =  {
-      uri: url,
+      url: url,
       group: sourceGroup,
     }
     hlib.hApiSearch(params,  _copy)
@@ -41,6 +44,8 @@ function _copy(rows:any[]) {
     let regex = new RegExp(sourceDomain, 'g')
     rowText = rowText.replace(regex, destinationDomain)
     row = JSON.parse(rowText)
+    let originalUser = row.user
+    let originalCreated = row.created
     row.user = `${username}@hypothes.is`
     row.group = destinationGroup
     // these are probably ignored, but..    
@@ -49,6 +54,9 @@ function _copy(rows:any[]) {
     delete row.hidden
     delete row.moderation
     row.permissions = hlib.createPermissions(username, destinationGroup)
+    let text = row.text
+    text += `<hr>Copied from ${sourceDomain} (${originalUser}, ${originalCreated})`
+    row.text = text
     console.log('row after', row)
     hlib.postAnnotation(JSON.stringify(row), hlib.getToken())
       .then(data => {
