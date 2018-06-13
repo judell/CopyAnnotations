@@ -1,4 +1,4 @@
-import * as hlib from '../../hlib/hlib'
+////import * as hlib from '../../hlib/hlib'
 
 function logWrite(msg:string) {
   console.log(msg)
@@ -12,23 +12,21 @@ function logAppend(msg:string) {
 
 // main entry point, wired to copy button
 function copy() {
-  
   let textArea = hlib.getById('urlListContainer') as HTMLTextAreaElement
   let urlListText = textArea.value
   let urls = urlListText.split('\n')
   urls = urls.filter(url => { if (url) { return url } })
   console.log(urls)
   urls.forEach(url => {
-    let params = {'uri': url}
+    let params = {'url': url}
+    hlib.hApiSearch(params,  _copy)
   })
 }
 
-function _copy(replies:any, annotations:any) {
-  let sourceDomainForm = hlib.getById('sourceDomainForm') as HTMLInputElement
-  let sourceDomain = sourceDomainForm.value
-  let destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
+function _copy(annotations:any) {
+    let destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
   let destinationDomain = destinationDomainForm.value
-  console.log(sourceDomain, destinationDomain, replies)
+  console.log(destinationDomain, annotations)
 }
 
 let tokenContainer = hlib.getById('tokenContainer')
@@ -36,12 +34,6 @@ hlib.createApiTokenInputForm(tokenContainer)
 
 let userContainer = hlib.getById('userContainer')
 hlib.createUserInputForm(userContainer)
-
-hlib.createFacetInputForm(
-  hlib.getById('sourceDomainContainer'),
-  'sourceDomain',
-  'domain from which to copy (e.g. site1.org)'
-)
 
 hlib.createFacetInputForm(
   hlib.getById('destinationDomainContainer'),
