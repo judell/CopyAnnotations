@@ -1,4 +1,4 @@
-////import * as hlib from '../../hlib/hlib'
+//import * as hlib from '../../hlib/hlib'
 
 function logWrite(msg:string) {
   console.log(msg)
@@ -18,15 +18,43 @@ function copy() {
   urls = urls.filter(url => { if (url) { return url } })
   console.log(urls)
   urls.forEach(url => {
-    let params = {'url': url}
+    let sourceGroup = hlib.getSelectedGroup('sourceGroupsList')
+    let params:any =  {
+      uri: url,
+      group: sourceGroup,
+    }
     hlib.hApiSearch(params,  _copy)
   })
 }
 
-function _copy(annotations:any) {
-    let destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
+function _copy(rows:any[]) {
+  let destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
   let destinationDomain = destinationDomainForm.value
-  console.log(destinationDomain, annotations)
+  let destinationGroup = hlib.getSelectedGroup('destinationGroupsList')
+  let username = hlib.getUser()
+  rows.forEach(row => {
+    console.log(destinationDomain, 'row before', row)
+    let a = document.createElement('a')
+    a.href = row.uri
+    let sourceDomain = `${a.protocol}//${a.hostname}`
+    let rowText = JSON.stringify(row)
+    let regex = new RegExp(sourceDomain, 'g')
+    rowText = rowText.replace(regex, destinationDomain)
+    row = JSON.parse(rowText)
+    row.user = `${username}@hypothes.is`
+    row.group = destinationGroup
+    // these are probably ignored, but..    
+    delete row.user_info  
+    delete row.flagged
+    delete row.hidden
+    delete row.moderation
+    row.permissions = hlib.createPermissions(username, destinationGroup)
+    console.log('row after', row)
+    hlib.postAnnotation(JSON.stringify(row), hlib.getToken())
+      .then(data => {
+        console.log(data)
+      })
+  }
 }
 
 let tokenContainer = hlib.getById('tokenContainer')
@@ -69,7 +97,7 @@ setTimeout( function() {
     'sourceGroup', 
     'sourceGroupsList', 
     'group from which to copy annotations')
-}, 500)
+}, 1000)
 
 let destinationGroupContainer = hlib.getById('destinationGroupContainer')
 hlib.createGroupInputForm(destinationGroupContainer, 'destinationGroupList')
@@ -80,7 +108,7 @@ setTimeout( function() {
     'destinationGroup', 
     'destinationGroupsList', 
     'group to which to copy annotations')
-}, 500)
+}, 1000)
 
 hlib.createFacetInputForm(
   hlib.getById('limitContainer'), 
@@ -88,5 +116,5 @@ hlib.createFacetInputForm(
   'max annotations to copy (use a small number for testing)'
 )
 
-
+hlib.getById('destinationDomainForm').value = 'http://bouncer.jonudell.info'
 
