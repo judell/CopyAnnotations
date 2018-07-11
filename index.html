@@ -22,6 +22,9 @@
       margin-left: 40px;
       margin-top: 20px;
     }
+    .counter {
+      display: none;
+    }
   </style>
 </head>
 
@@ -30,7 +33,7 @@
   <div id="formContainer">
 
     <h1>
-     Copy annotations from one set of URLs to another
+     Copy Hypothesis annotations from one domain (and/or group) to another
     </h1>
 
     <div class="formField" id="userContainer"></div>
@@ -40,8 +43,9 @@
     <div class="formField" id="sourceGroupContainer"></div>
     <div class="formField" id="destinationGroupContainer"></div>
     <div class="formField" id="limitContainer"></div>
+    <div class="formField" id="userFilterContainer"></div>
     
-    <div><button onclick="copy()">copy</button></div>
+    <div><button onclick="copy()">copy</button> &nbsp;&nbsp; <span class="counter">0</span></div>
 
     <div class="help">
       <hr>
@@ -60,7 +64,31 @@
   </div>
 
   <div id="urlList">
-    <textarea rows="40" cols="80" id="urlListContainer">Paste URLs here, one per line</textarea>
+      <!--<textarea id="urlListContainer" rows="40" cols="80">http://jonudell.net/h/test-chapter1.html</textarea>-->
+    <textarea rows="40" cols="80" id="urlListContainer">Paste URLs here, one per line.
+
+This tool expects that all the URLs live at the same source domain, e.g. https://originalBook.org, and that you've declared a different destinationDomain, e.g. https://revisedBook.net.
+
+For each URL, the tool searches for annotations in the sourceGroup you declared, and copies annotations to the destinationDomain, placing them in the destinationGroup you declared
+  
+The sourceGroup and destinationGroup can be the same or different.
+
+Suppose sourceGroup and destinationGroup are both Public in both cases, and your source URLs are:  
+
+https://originalBook.org/chapter1.html
+https://originalBook.org/chapter2.html
+
+If your destinationDomain is https://revisedBook.net, then the annotations from those two chapters, in group Public, will be copied to group Public at:
+
+https://revisedBook.org/chapter1.html
+https://revisedBook.org/chapter2.html
+
+Copied annotations will be owned by the users whose username and API token you specify.
+
+Copied annotations will include a note that cites the original user, the original date, and the copy date.
+
+To proceed, replace all the text here with a list of URLs, one per line.
+    </textarea>
   </div>
   
   <div id="viewer"></div>
