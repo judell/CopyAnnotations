@@ -15,7 +15,7 @@ self.addEventListener('message', function (e) {
           self.postMessage({
             'success': data.response
           })
-        } else {
+        } else { // response was 200-299 but not the object we expected
           self.postMessage({
             'failure': data.response
           })
