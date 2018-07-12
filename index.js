@@ -101,7 +101,8 @@ function _copy(rows) {
             totalElement.innerHTML = totalAnnotationsToCopy.toString();
             worker.postMessage({
                 payload: JSON.stringify(payload),
-                token: hlib.getToken()
+                token: hlib.getToken(),
+                maxAnnotations: maxAnnotations
             });
         }
     });
@@ -145,7 +146,7 @@ hlib.createFacetInputForm(hlib.getById('userFilterContainer'), 'userFilter', 'on
 destinationDomainForm = hlib.getById('destinationDomainForm');
 destinationDomainForm.value = 'https://wisc.pb.unizin.org';
 maxAnnotationsForm = hlib.getById('maxAnnotationsForm');
-maxAnnotationsForm.value = '10';
+maxAnnotationsForm.value = '1000';
 userFilterForm = hlib.getById('userFilterForm');
 userFilterForm.value = 'UW_Madison.French';
 var textArea = hlib.getById('urlListContainer');

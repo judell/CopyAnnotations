@@ -103,6 +103,7 @@ function _copy(rows:any[]) {
       worker.postMessage({
         payload: JSON.stringify(payload),
         token: hlib.getToken(),
+        maxAnnotations: maxAnnotations,
       })
     }
   })
@@ -178,7 +179,7 @@ destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElemen
 destinationDomainForm.value = 'https://wisc.pb.unizin.org'
 
 maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
-maxAnnotationsForm.value = '10'
+maxAnnotationsForm.value = '1000'
 
 userFilterForm = hlib.getById('userFilterForm') as HTMLInputElement
 userFilterForm.value = 'UW_Madison.French'

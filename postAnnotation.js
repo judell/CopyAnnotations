@@ -3,7 +3,9 @@ self.importScripts("https://jonudell.info/hlib/hlib.bundle.js");
 // listen for requests to import annotations for a zotero item
 self.addEventListener('message', function (e) {
   // spread the api calls
-  let delay = Math.floor(Math.random() * Math.floor(10000))
+  let multiplier = 50
+  let millisecondsToDelay = e.data.maxAnnotations * multiplier
+  let delay = Math.floor(Math.random() * Math.floor(millisecondsToDelay))
   let group = JSON.parse(e.data.payload).group
   setTimeout(function() {
     hlib.postAnnotation(e.data.payload, e.data.token)
