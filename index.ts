@@ -2,33 +2,35 @@ import * as hlib from '../../hlib/hlib'
 
 var maxAnnotations:number
 
+var totalAnnotationsToCopy:number = 0
+
 var copiedIds:any = {}
 
 var worker = new Worker('postAnnotation.js');
 
 worker.addEventListener('message', function (msg) {
   console.log(msg)
+  if (msg.data.success) {
+    let response = JSON.parse(msg.data.success)
+    incrementCountOfCopiedIds(response.id)
+  }
   let counterElement = document.querySelector('.counter')!
   let counter:number = parseInt(counterElement.innerHTML)
   counterElement.innerHTML = (counter + 1).toString()
 })
 
-function countCopies() : number {
+function countOfCopiedIds() : number {
   return Object.keys(copiedIds).length
 }
 
-function updateCount(id:string) {
-  if (copiedIds[id]) {
-  copiedIds[id] += 1
-  } else {
-  copiedIds[id] = 1
-  }
+function incrementCountOfCopiedIds(id:string) {
+  if (copiedIds[id]) {  copiedIds[id] += 1  } else {  copiedIds[id] = 1  }
 }
 
 // main entry point, wired to copy button
 function copy() {
-  let textArea = hlib.getById('urlListContainer') as HTMLTextAreaElement
-  let urlListText = textArea.value
+let textArea = hlib.getById('urlListContainer') as HTMLTextAreaElement
+let urlListText = textArea.value
   let urls = urlListText.split('\n')
   urls = urls.filter(url => { 
     url = url.trim()
@@ -39,11 +41,8 @@ function copy() {
   maxAnnotations = parseInt(maxAnnotationsForm.value)
   let userFilterForm = hlib.getById('userFilterForm') as HTMLInputElement
   let userFilter = userFilterForm.value 
-  urls.forEach(url => {
-    if (countCopies() > maxAnnotations) { 
-      console.log(`limit reached, skipping ${url}`)
-      return
-    }
+  for (let i = 0; i < urls.length; i++ ) {
+    let url = urls[i]
     let sourceGroup = hlib.getSelectedGroup('sourceGroupsList')
     let params:any =  {
       url: url,
@@ -57,20 +56,14 @@ function copy() {
 }
 
 function _copy(rows:any[]) {
-  let counterElement = document.querySelector('.counter')! as HTMLElement
-  counterElement.style.display = 'inline'
+  let progressElement = document.querySelector('.progress')! as HTMLElement
+  progressElement.style.display = 'block'
   let destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
   let destinationDomain = destinationDomainForm.value
   let sourceGroup = hlib.getSelectedGroup('sourceGroupsList')
   let destinationGroup = hlib.getSelectedGroup('destinationGroupsList')
   let username = hlib.getUser()
-  for ( let i = 0; i < rows.length; i++ ) {
-    let row = rows[i]
-    updateCount(row.id)
-    if (countCopies() > maxAnnotations) { 
-      console.log('limit reached')
-      return
-    }
+  rows.forEach(row => {
     let anno = hlib.parseAnnotation(row)
     let a = document.createElement('a')
     a.href = row.uri
@@ -85,16 +78,22 @@ function _copy(rows:any[]) {
       user: `${username}@hypothes.is`,
       uri: row.uri,
       tags: row.tags,
-      text: row.text += `<hr>Copied from ${sourceDomain} (${originalUser}, ${originalCreated})`,
+      //text: row.text += `<hr>Copied from ${sourceDomain} (${originalUser}, ${originalCreated})`,
+      text: row.text,
       target: row.target,
       group: destinationGroup,
       permissions: hlib.createPermissions(username, destinationGroup),
       document: row.document,
     }
-    worker.postMessage({
-      payload: JSON.stringify(payload),
-      token: hlib.getToken(),
-    })
+    totalAnnotationsToCopy += 1
+    if (totalAnnotationsToCopy <= maxAnnotations) {
+      let totalElement = document.querySelector('.total')! as HTMLElement
+      totalElement.innerHTML = totalAnnotationsToCopy.toString()
+      worker.postMessage({
+        payload: JSON.stringify(payload),
+        token: hlib.getToken(),
+      })
+    }
   }
 }
 

@@ -13,12 +13,12 @@ function postAnnotation(payload, token) {
   hlib.postAnnotation(payload, token)
     .then( data => {
       self.postMessage({
-        'success': JSON.stringify(data.response)
+        'success': data.response
       })
     })
     .catch( e => {
       self.postMessage({
-        'failure': JSON.stringify(e)
+        'failure': e
       })
     })
 }

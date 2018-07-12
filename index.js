@@ -1,18 +1,23 @@
 "use strict";
 //import * as hlib from '../../hlib/hlib'
 var maxAnnotations;
+var totalAnnotationsToCopy = 0;
 var copiedIds = {};
 var worker = new Worker('postAnnotation.js');
 worker.addEventListener('message', function (msg) {
     console.log(msg);
+    if (msg.data.success) {
+        var response = JSON.parse(msg.data.success);
+        incrementCountOfCopiedIds(response.id);
+    }
     var counterElement = document.querySelector('.counter');
     var counter = parseInt(counterElement.innerHTML);
     counterElement.innerHTML = (counter + 1).toString();
 });
-function countCopies() {
+function countOfCopiedIds() {
     return Object.keys(copiedIds).length;
 }
-function updateCount(id) {
+function incrementCountOfCopiedIds(id) {
     if (copiedIds[id]) {
         copiedIds[id] += 1;
     }
@@ -36,11 +41,8 @@ function copy() {
     maxAnnotations = parseInt(maxAnnotationsForm.value);
     var userFilterForm = hlib.getById('userFilterForm');
     var userFilter = userFilterForm.value;
-    urls.forEach(function (url) {
-        if (countCopies() > maxAnnotations) {
-            console.log("limit reached, skipping " + url);
-            return;
-        }
+    for (var i = 0; i < urls.length; i++) {
+        var url = urls[i];
         var sourceGroup = hlib.getSelectedGroup('sourceGroupsList');
         var params = {
             url: url,
@@ -50,23 +52,17 @@ function copy() {
             params.user = userFilter;
         }
         hlib.hApiSearch(params, _copy);
-    });
+    }
 }
 function _copy(rows) {
-    var counterElement = document.querySelector('.counter');
-    counterElement.style.display = 'inline';
+    var progressElement = document.querySelector('.progress');
+    progressElement.style.display = 'block';
     var destinationDomainForm = hlib.getById('destinationDomainForm');
     var destinationDomain = destinationDomainForm.value;
     var sourceGroup = hlib.getSelectedGroup('sourceGroupsList');
     var destinationGroup = hlib.getSelectedGroup('destinationGroupsList');
     var username = hlib.getUser();
-    for (var i = 0; i < rows.length; i++) {
-        var row = rows[i];
-        updateCount(row.id);
-        if (countCopies() > maxAnnotations) {
-            console.log('limit reached');
-            return;
-        }
+    rows.forEach(function (row) {
         var anno = hlib.parseAnnotation(row);
         var a = document.createElement('a');
         a.href = row.uri;
@@ -87,11 +83,16 @@ function _copy(rows) {
             permissions: hlib.createPermissions(username, destinationGroup),
             document: row.document
         };
-        worker.postMessage({
-            payload: JSON.stringify(payload),
-            token: hlib.getToken()
-        });
-    }
+        totalAnnotationsToCopy += 1;
+        if (totalAnnotationsToCopy <= maxAnnotations) {
+            var totalElement = document.querySelector('.total');
+            totalElement.innerHTML = totalAnnotationsToCopy.toString();
+            worker.postMessage({
+                payload: JSON.stringify(payload),
+                token: hlib.getToken()
+            });
+        }
+    });
 }
 var tokenContainer = hlib.getById('tokenContainer');
 hlib.createApiTokenInputForm(tokenContainer);
