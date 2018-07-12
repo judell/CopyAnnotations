@@ -8,7 +8,6 @@ var destinationDomainForm = hlib.getById('destinationDomainForm');
 var maxAnnotationsForm = hlib.getById('maxAnnotationsForm');
 var userFilterForm = hlib.getById('userFilterForm');
 worker.addEventListener('message', function (msg) {
-    console.log(msg);
     if (msg.data.success) {
         var response = JSON.parse(msg.data.success);
         incrementCountOfCopiedIds(response.id);
@@ -16,8 +15,14 @@ worker.addEventListener('message', function (msg) {
         var counter = parseInt(counterElement.innerHTML);
         counterElement.innerHTML = (counter + 1).toString();
     }
-    if (msg.data.exception) {
+    else if (msg.data.failure) {
+        console.error(msg.data.failure);
+    }
+    else if (msg.data.exception) {
         console.error(msg.data.exception);
+    }
+    else {
+        console.error('unexpected message from worker postAnnotation.js');
     }
 });
 function countOfCopiedIds() {
@@ -66,7 +71,7 @@ function _copy(rows) {
     var destinationDomain = destinationDomainForm.value;
     var sourceGroup = hlib.getSelectedGroup('sourceGroupsList');
     var destinationGroup = hlib.getSelectedGroup('destinationGroupsList');
-    destinationGroup = '';
+    destinationGroup = 'GRRvb7qE';
     var username = hlib.getUser();
     rows.forEach(function (row) {
         var anno = hlib.parseAnnotation(row);

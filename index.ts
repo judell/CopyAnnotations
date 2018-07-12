@@ -15,20 +15,19 @@ var maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
 var userFilterForm = hlib.getById('userFilterForm') as HTMLInputElement
 
 worker.addEventListener('message', function (msg) {
-  console.log(msg)
-  
   if (msg.data.success) {
     let response = JSON.parse(msg.data.success)
     incrementCountOfCopiedIds(response.id)
     let counterElement = document.querySelector('.counter')!
     let counter:number = parseInt(counterElement.innerHTML)
     counterElement.innerHTML = (counter + 1).toString()
-  }
-
-  if (msg.data.exception) {
+  } else if (msg.data.failure) {
+    console.error(msg.data.failure)
+  } else if (msg.data.exception) {
     console.error(msg.data.exception)
+  } else {
+    console.error('unexpected message from worker postAnnotation.js')
   }
-
 })
 
 function countOfCopiedIds() : number {
@@ -73,7 +72,7 @@ function _copy(rows:any[]) {
   let destinationDomain = destinationDomainForm.value
   let sourceGroup = hlib.getSelectedGroup('sourceGroupsList')
   let destinationGroup = hlib.getSelectedGroup('destinationGroupsList')
-  destinationGroup = ''
+  destinationGroup = 'GRRvb7qE'
   let username = hlib.getUser()
   rows.forEach(row => {
     let anno = hlib.parseAnnotation(row)
