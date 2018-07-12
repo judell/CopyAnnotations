@@ -8,15 +8,27 @@ var copiedIds:any = {}
 
 var worker = new Worker('postAnnotation.js');
 
+var destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
+
+var maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
+
+var userFilterForm = hlib.getById('userFilterForm') as HTMLInputElement
+
 worker.addEventListener('message', function (msg) {
   console.log(msg)
+  
   if (msg.data.success) {
     let response = JSON.parse(msg.data.success)
     incrementCountOfCopiedIds(response.id)
+    let counterElement = document.querySelector('.counter')!
+    let counter:number = parseInt(counterElement.innerHTML)
+    counterElement.innerHTML = (counter + 1).toString()
   }
-  let counterElement = document.querySelector('.counter')!
-  let counter:number = parseInt(counterElement.innerHTML)
-  counterElement.innerHTML = (counter + 1).toString()
+
+  if (msg.data.exception) {
+    console.error(msg.data.exception)
+  }
+
 })
 
 function countOfCopiedIds() : number {
@@ -52,16 +64,16 @@ let urlListText = textArea.value
       params.user = userFilter
     }
     hlib.hApiSearch(params,  _copy)
-  })
+  }
 }
 
 function _copy(rows:any[]) {
   let progressElement = document.querySelector('.progress')! as HTMLElement
   progressElement.style.display = 'block'
-  let destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
   let destinationDomain = destinationDomainForm.value
   let sourceGroup = hlib.getSelectedGroup('sourceGroupsList')
   let destinationGroup = hlib.getSelectedGroup('destinationGroupsList')
+  destinationGroup = ''
   let username = hlib.getUser()
   rows.forEach(row => {
     let anno = hlib.parseAnnotation(row)
@@ -94,7 +106,7 @@ function _copy(rows:any[]) {
         token: hlib.getToken(),
       })
     }
-  }
+  })
 }
 
 let tokenContainer = hlib.getById('tokenContainer')
@@ -162,13 +174,14 @@ hlib.createFacetInputForm(
   'only copy annotations created by this user'
 )
 
-let destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
+/* test scaffold */
+destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
 destinationDomainForm.value = 'https://wisc.pb.unizin.org'
 
-let maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
-maxAnnotationsForm.value = '1000'
+maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
+maxAnnotationsForm.value = '10'
 
-let userFilterForm = hlib.getById('userFilterForm') as HTMLInputElement
+userFilterForm = hlib.getById('userFilterForm') as HTMLInputElement
 userFilterForm.value = 'UW_Madison.French'
 
 let textArea = hlib.getById('urlListContainer') as HTMLTextAreaElement

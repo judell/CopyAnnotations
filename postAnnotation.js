@@ -18,7 +18,7 @@ function postAnnotation(payload, token) {
     })
     .catch( e => {
       self.postMessage({
-        'failure': e
+        'exception': e
       })
     })
 }
