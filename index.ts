@@ -174,7 +174,7 @@ hlib.createFacetInputForm(
   'only copy annotations created by this user'
 )
 
-/* test scaffold */
+/* test scaffold 
 destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
 destinationDomainForm.value = 'https://wisc.pb.unizin.org'
 
@@ -231,3 +231,4 @@ https://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-v4-page-
 https://wisc.pb.unizin.org/frenchcscr/chapter/sample-page-nms/
 https://wisc.pb.unizin.org/frenchcscr/chapter/sandbox-ng/
 https://wisc.pb.unizin.org/frenchcscr/part/verlaine-art-poetique/`
+*/
