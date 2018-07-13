@@ -55,10 +55,10 @@
         Until we can search whole domains, you'll need to provide a list of URLs 
         that we'll search one by one. 
         Only top-level annotations will be copied, replies are ignored.
-        The username you provide will be the creator of copied annotations.
-        If the source group is not Public, that user must be a member to 
+        The Hypothesis username you provide will be the creator of copied annotations.
+        If the source group is not Public, the Hypothesis user must be a member to 
         read annotations from it. Likewise, if the destination group is not Public, 
-        that user must be a member to write annotations to it.
+        the Hypothesis user must be a member to write annotations to it.
       </p>
     </div>
 
@@ -68,9 +68,11 @@
       <!--<textarea id="urlListContainer" rows="40" cols="80">http://jonudell.net/h/test-chapter1.html</textarea>-->
     <textarea rows="40" cols="80" id="urlListContainer">Paste URLs here, one per line.
 
-This tool expects that all the URLs live at the same source domain, e.g. https://originalBook.org, and that you've declared a different destinationDomain, e.g. https://revisedBook.net.
+This tool expects that all the URLs live at the same source domain, e.g. https://originalBook.org.
 
-For each URL, the tool searches for annotations in the sourceGroup you declared, and copies annotations to the destinationDomain, placing them in the destinationGroup you declared
+It expects you to provide a destination domain which may be the same (e.g. https://originalBook.org) or different (e.g. https://revisedBook.net).
+
+For each URL, the tool searches for annotations in the sourceGroup you picked, and copies annotations to the destinationDomain, placing them in the destinationGroup you picked.
   
 The sourceGroup and destinationGroup can be the same or different.
 
@@ -84,7 +86,7 @@ If your destinationDomain is https://revisedBook.net, then the annotations from 
 https://revisedBook.org/chapter1.html
 https://revisedBook.org/chapter2.html
 
-Copied annotations will be owned by the users whose username and API token you specify.
+Copied annotations will be owned by the user whose username and API token you specify.
 
 Copied annotations will include a note that cites the original user, the original date, and the copy date.
 

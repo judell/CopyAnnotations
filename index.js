@@ -142,12 +142,61 @@ setTimeout(function () {
 }, 1000);
 hlib.createFacetInputForm(hlib.getById('limitContainer'), 'maxAnnotations', 'max annotations to copy (use a small number for testing)');
 hlib.createFacetInputForm(hlib.getById('userFilterContainer'), 'userFilter', 'only copy annotations created by this user');
-/* test scaffold */
-destinationDomainForm = hlib.getById('destinationDomainForm');
-destinationDomainForm.value = 'https://wisc.pb.unizin.org';
-maxAnnotationsForm = hlib.getById('maxAnnotationsForm');
-maxAnnotationsForm.value = '1000';
-userFilterForm = hlib.getById('userFilterForm');
-userFilterForm.value = 'UW_Madison.French';
-var textArea = hlib.getById('urlListContainer');
-textArea.value = "\nhttps://wisc.pb.unizin.org/frenchcscr/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-alain-mabanckou-black-bazar/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-ambroise-pare/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-baudelaire-a-une-passante/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-baudelaire-le-masque/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-camus-lexil-dhelene-partie-a/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-jean-de-lery/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-la-chanson-de-roland/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-lappel-durbain-ii-1095/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-le-concile-de-trente/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-le-philosophe/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-ledit-de-nantes/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-les-memoires-du-cardinal-de-retz/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-maupassant-le-bonheur/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-maupassant-le-lit-29/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-maupassant-premiere-neige/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-maupassant-rose/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-moliere-i1/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-moliere-i4/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-moliere-lecole-des-femmes-ii5/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-moliere-lecole-des-femmes-iv8/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-moliere-lecole-des-femmes-v4/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-nancy-huston-prodige-polyphonie-pages-99-108/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-ronsard-quand-vous-serez-bien-vieille/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-saint-thomas-daquin/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/assignment-verlaine-art-poetique/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/baudelaire-au-lecteur-p-1/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/baudelaire-au-lecteur-p-2/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/chapter-1/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/creative-title/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/hugo-a-lobeissance-p-3/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/maupassant-le-bonheur-page-2/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/maupassant-le-lit-29-page-2/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/maupassant-premiere-neige-page-2/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/maupassant-premiere-neige-page-3/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/maupassant-rose-page-2/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/moliere-i1-page-2/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-i4-page-2/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-i4-page-3/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-ii5-page-2/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-iv8-page-2/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-v4-page-2/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/sample-page-nms/\nhttps://wisc.pb.unizin.org/frenchcscr/chapter/sandbox-ng/\nhttps://wisc.pb.unizin.org/frenchcscr/part/verlaine-art-poetique/";
+/* test scaffold
+destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
+destinationDomainForm.value = 'https://wisc.pb.unizin.org'
+
+maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
+maxAnnotationsForm.value = '1000'
+
+userFilterForm = hlib.getById('userFilterForm') as HTMLInputElement
+userFilterForm.value = 'UW_Madison.French'
+
+let textArea = hlib.getById('urlListContainer') as HTMLTextAreaElement
+textArea.value = `
+https://wisc.pb.unizin.org/frenchcscr/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-alain-mabanckou-black-bazar/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-ambroise-pare/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-baudelaire-a-une-passante/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-baudelaire-le-masque/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-camus-lexil-dhelene-partie-a/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-jean-de-lery/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-la-chanson-de-roland/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-lappel-durbain-ii-1095/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-le-concile-de-trente/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-le-philosophe/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-ledit-de-nantes/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-les-memoires-du-cardinal-de-retz/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-maupassant-le-bonheur/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-maupassant-le-lit-29/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-maupassant-premiere-neige/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-maupassant-rose/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-moliere-i1/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-moliere-i4/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-moliere-lecole-des-femmes-ii5/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-moliere-lecole-des-femmes-iv8/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-moliere-lecole-des-femmes-v4/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-nancy-huston-prodige-polyphonie-pages-99-108/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-ronsard-quand-vous-serez-bien-vieille/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-saint-thomas-daquin/
+https://wisc.pb.unizin.org/frenchcscr/chapter/assignment-verlaine-art-poetique/
+https://wisc.pb.unizin.org/frenchcscr/chapter/baudelaire-au-lecteur-p-1/
+https://wisc.pb.unizin.org/frenchcscr/chapter/baudelaire-au-lecteur-p-2/
+https://wisc.pb.unizin.org/frenchcscr/chapter/chapter-1/
+https://wisc.pb.unizin.org/frenchcscr/chapter/creative-title/
+https://wisc.pb.unizin.org/frenchcscr/chapter/hugo-a-lobeissance-p-3/
+https://wisc.pb.unizin.org/frenchcscr/chapter/maupassant-le-bonheur-page-2/
+https://wisc.pb.unizin.org/frenchcscr/chapter/maupassant-le-lit-29-page-2/
+https://wisc.pb.unizin.org/frenchcscr/chapter/maupassant-premiere-neige-page-2/
+https://wisc.pb.unizin.org/frenchcscr/chapter/maupassant-premiere-neige-page-3/
+https://wisc.pb.unizin.org/frenchcscr/chapter/maupassant-rose-page-2/
+https://wisc.pb.unizin.org/frenchcscr/chapter/moliere-i1-page-2/
+https://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-i4-page-2/
+https://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-i4-page-3/
+https://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-ii5-page-2/
+https://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-iv8-page-2/
+https://wisc.pb.unizin.org/frenchcscr/chapter/moliere-lecole-des-femmes-v4-page-2/
+https://wisc.pb.unizin.org/frenchcscr/chapter/sample-page-nms/
+https://wisc.pb.unizin.org/frenchcscr/chapter/sandbox-ng/
+https://wisc.pb.unizin.org/frenchcscr/part/verlaine-art-poetique/`
+*/ 
