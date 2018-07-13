@@ -4,9 +4,6 @@ var maxAnnotations;
 var totalAnnotationsToCopy = 0;
 var copiedIds = {};
 var worker = new Worker('postAnnotation.js');
-var destinationDomainForm = hlib.getById('destinationDomainForm');
-var maxAnnotationsForm = hlib.getById('maxAnnotationsForm');
-var userFilterForm = hlib.getById('userFilterForm');
 worker.addEventListener('message', function (msg) {
     if (msg.data.success) {
         var response = JSON.parse(msg.data.success);
@@ -68,6 +65,7 @@ function copy() {
 function _copy(rows) {
     var progressElement = document.querySelector('.progress');
     progressElement.style.display = 'block';
+    var destinationDomainForm = hlib.getById('destinationDomainForm');
     var destinationDomain = destinationDomainForm.value;
     var sourceGroup = hlib.getSelectedGroup('sourceGroupsList');
     var destinationGroup = hlib.getSelectedGroup('destinationGroupsList');
@@ -142,12 +140,12 @@ setTimeout(function () {
 }, 1000);
 hlib.createFacetInputForm(hlib.getById('limitContainer'), 'maxAnnotations', 'max annotations to copy (use a small number for testing)');
 hlib.createFacetInputForm(hlib.getById('userFilterContainer'), 'userFilter', 'only copy annotations created by this user');
+var maxAnnotationsForm = hlib.getById('maxAnnotationsForm');
+maxAnnotationsForm.value = '1000';
 /* test scaffold
 destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
 destinationDomainForm.value = 'https://wisc.pb.unizin.org'
 
-maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
-maxAnnotationsForm.value = '1000'
 
 userFilterForm = hlib.getById('userFilterForm') as HTMLInputElement
 userFilterForm.value = 'UW_Madison.French'

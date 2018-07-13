@@ -8,12 +8,6 @@ var copiedIds:any = {}
 
 var worker = new Worker('postAnnotation.js');
 
-var destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
-
-var maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
-
-var userFilterForm = hlib.getById('userFilterForm') as HTMLInputElement
-
 worker.addEventListener('message', function (msg) {
   if (msg.data.success) {
     let response = JSON.parse(msg.data.success)
@@ -69,6 +63,7 @@ let urlListText = textArea.value
 function _copy(rows:any[]) {
   let progressElement = document.querySelector('.progress')! as HTMLElement
   progressElement.style.display = 'block'
+  let destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
   let destinationDomain = destinationDomainForm.value
   let sourceGroup = hlib.getSelectedGroup('sourceGroupsList')
   let destinationGroup = hlib.getSelectedGroup('destinationGroupsList')
@@ -174,12 +169,13 @@ hlib.createFacetInputForm(
   'only copy annotations created by this user'
 )
 
+let maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
+maxAnnotationsForm.value = '1000'
+
 /* test scaffold 
 destinationDomainForm = hlib.getById('destinationDomainForm') as HTMLInputElement
 destinationDomainForm.value = 'https://wisc.pb.unizin.org'
 
-maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
-maxAnnotationsForm.value = '1000'
 
 userFilterForm = hlib.getById('userFilterForm') as HTMLInputElement
 userFilterForm.value = 'UW_Madison.French'
