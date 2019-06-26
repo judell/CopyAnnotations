@@ -27,12 +27,12 @@ function checkSettings() {
         return;
     }
     const { sourceDomainElement, sourceGroup, maxAnnotations } = validationHelper();
-    const facetLink = `https://jonudell.info/h/facet/?group=${sourceGroup}&wildcard_uri=${sourceDomainElement.value}&max=${maxAnnotations}`;
+    const facetLink = `https://jonudell.info/h/facet/?group=${sourceGroup}&wildcard_uri=${sourceDomainElement.value}&max=${maxAnnotations}&expanded=true`;
     hlib.getById('facetSettingsLink').innerHTML = `<a target="_settings" href=${facetLink}>click to review selected annotations</a>`;
 }
 function checkResults() {
     const { sourceDomainElement, destinationGroup } = validationHelper();
-    const facetLink = `https://jonudell.info/h/facet/?group=${destinationGroup}&wildcard_uri=${sourceDomainElement.value}&max=${maxAnnotations}`;
+    const facetLink = `https://jonudell.info/h/facet/?group=${destinationGroup}&wildcard_uri=${sourceDomainElement.value}&max=${maxAnnotations}&expanded=true`;
     hlib.getById('facetResultsLink').innerHTML = `<a target="_results" href=${facetLink}>click to review copied annotations</a>`;
 }
 // main entry point, wired to copy button
