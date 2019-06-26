@@ -6,6 +6,8 @@
     body {
       display: flex;
       margin-top: 20px;
+      margin-left: 2in;
+      width:600px;
     }
 
     h1 {
@@ -17,14 +19,14 @@
       margin-left: 20px;
     }
 
-    #urlList {
-      width: 50%;
-      margin-left: 40px;
-      margin-top: 20px;
-    }
-    .progress {
+    #fetchProgress, #postProgress {
       display: none;
     }
+
+    button {
+      margin-right: 20px;
+    }
+
   </style>
 </head>
 
@@ -33,7 +35,7 @@
   <div id="formContainer">
 
     <h1>
-     Copy Hypothesis annotations from one domain (and/or group) to another
+     Copy Hypothesis annotations from one group to another
     </h1>
 
     <div class="formField" id="userContainer"></div>
@@ -44,16 +46,25 @@
     <div class="formField" id="destinationGroupContainer"></div>
     <div class="formField" id="limitContainer"></div>
     <div class="formField" id="userFilterContainer"></div>
-    
-    <div><button onclick="copy()">copy</button></div>
-    <div class="progress"><span class="counter">0</span> of <span class="total">0</span></div>
 
+    <div><button id="checkSettingsButton" onclick="checkSettings()">1. check settings</button> <span id="facetSettingsLink"></span></div>
+
+    <div style="display:flex" id="copyControl">
+      <div> <button id="copyButton" onclick="copy()">2. copy notes</button></div>
+      <div id="fetchProgress"> fetching annotations </span> </div>
+      <div id="postProgress"> copying annotations <span class="counter">0</span> of <span class="total">0</span> </div>
+    </div>
+
+    <div><button id="checkResultsButton" onclick="checkResults()">3. check results</button> <span id="facetResultsLink"></span></div>
+
+    <p class="tokenReset">
+      <a title="click to reset">reset API token</a>
+    </p>
+    
     <div class="help">
       <hr>
       <p>
-        This tool copies annotations from one domain to another. 
-        Until we can search whole domains, you'll need to provide a list of URLs 
-        that we'll search one by one. 
+        This tool copies annotations from one group to another. 
         Only top-level annotations will be copied, replies are ignored.
         The Hypothesis username you provide will be the creator of copied annotations.
         If the source group is not Public, the Hypothesis user must be a member to 
@@ -64,40 +75,15 @@
 
   </div>
 
-  <div id="urlList">
-      <!--<textarea id="urlListContainer" rows="40" cols="80">http://jonudell.net/h/test-chapter1.html</textarea>-->
-    <textarea rows="40" cols="80" id="urlListContainer">Paste URLs here, one per line.
-
-This tool expects that all the URLs live at the same source domain, e.g. https://originalBook.org.
-
-It expects you to provide a destination domain which may be the same (e.g. https://originalBook.org) or different (e.g. https://revisedBook.net).
-
-For each URL, the tool searches for annotations in the sourceGroup you picked, and copies annotations to the destinationDomain, placing them in the destinationGroup you picked.
-  
-The sourceGroup and destinationGroup can be the same or different.
-
-Suppose sourceGroup and destinationGroup are both Public in both cases, and your source URLs are:  
-
-https://originalBook.org/chapter1.html
-https://originalBook.org/chapter2.html
-
-If your destinationDomain is https://revisedBook.net, then the annotations from those two chapters, in group Public, will be copied to group Public at:
-
-https://revisedBook.org/chapter1.html
-https://revisedBook.org/chapter2.html
-
-Copied annotations will be owned by the user whose username and API token you specify.
-
-Copied annotations will include a note that cites the original user, the original date, and the copy date.
-
-To proceed, replace all the text here with a list of URLs, one per line.
-    </textarea>
-  </div>
-  
-  <div id="viewer"></div>
-
-  <script src="https://jonudell.info/hlib/hlib.bundle.js"></script>
+  <script src="https://jonudell.info/hlib/hlib2.bundle.js"></script>
   <script src="./index.js"></script>
+
+  <script>
+    setTimeout(_ => {
+      hlib.manageTokenDisplayAndReset()
+    }, 200)
+  </script>
+  
 
 </body>
 
