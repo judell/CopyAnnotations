@@ -144,6 +144,7 @@ function adjustGroupPicker(groupContainer:string, label:string, id:string, messa
   const select = picker.querySelector('select') as HTMLSelectElement
   select.id = id
   select.onchange = null
+  select.selectedIndex = 0  
   picker.querySelector('.formMessage')!.innerHTML = message
 }
 

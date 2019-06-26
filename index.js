@@ -107,6 +107,7 @@ function adjustGroupPicker(groupContainer, label, id, message) {
     const select = picker.querySelector('select');
     select.id = id;
     select.onchange = null;
+    select.selectedIndex = 0;
     picker.querySelector('.formMessage').innerHTML = message;
 }
 function validationHelper() {
