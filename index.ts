@@ -1,25 +1,40 @@
 import * as hlib from '../../hlib/hlib'
 
+type userInput = {
+  sourceDomain: string
+  destinationDomain: string
+  sourceGroup: string
+  destinationGroup: string
+  user: string
+  maxAnnotations: number
+}
+
 let maxAnnotations:number = 2
 
 hlib.createFacetInputForm(
   hlib.getById('userContainer'),
   'user', 
-  'User who will fetch and create annotations'
+  'Hypothesis user who will fetch and create annotations'
 )
+hlib.getById('userForm').setAttribute('autocomplete', 'off')
 
 const tokenContainer = hlib.getById('tokenContainer')
 hlib.createApiTokenInputForm(tokenContainer)
-const clearInputButton = document.querySelector('#tokenContainer .clearInput') as HTMLElement
-clearInputButton.remove()
 
 const sourceDomainContainer = hlib.getById('sourceDomainContainer')
 hlib.createFacetInputForm(
   sourceDomainContainer,
   'sourceDomain',
-  `a <a href="https://web.hypothes.is/blog/using-the-new-wildcard-url-search-api-to-monitor-sitewide-annotation-activity/">wildcarded</a> 
-    domain, like https://example.com/*`
+  'e.g. example.com',
 )
+
+const destinationDomainContainer = hlib.getById('destinationDomainContainer')
+hlib.createFacetInputForm(
+  destinationDomainContainer,
+  'destinationDomain',
+  'e.g. elsewhere.com, optional, defaults to sourceDomain'
+)
+
 
 hlib.createFacetInputForm(
   hlib.getById('limitContainer'), 
@@ -57,28 +72,46 @@ function checkSettings() {
   if (! validInput() ) {
     return
   }
-  const { sourceDomainElement, sourceGroup, maxAnnotations } = validationHelper()
-  const facetLink = `https://jonudell.info/h/facet/?group=${sourceGroup}&wildcard_uri=${sourceDomainElement.value}&max=${maxAnnotations}&expanded=true`
-  hlib.getById('facetSettingsLink').innerHTML = `<a target="_settings" href=${facetLink}>click to review selected annotations</a>`
+  const { 
+    sourceDomain,
+    sourceGroup, 
+    maxAnnotations } = gatherInput()
+  const facetLink = `https://jonudell.info/h/facet/?group=${sourceGroup}&wildcard_uri=${wildcardify(sourceDomain)}&max=${maxAnnotations}&expanded=true`
+  const facetSettingsLink = hlib.getById('facetSettingsLink') as HTMLElement
+  facetSettingsLink.innerHTML = `<a href="${facetLink}" target="_copyAnnotationsReview">click to review selected annotations</a>`
 }
 
 function checkResults() {
-  const { sourceDomainElement, destinationGroup } = validationHelper()
-  const facetLink = `https://jonudell.info/h/facet/?group=${destinationGroup}&wildcard_uri=${sourceDomainElement.value}&max=${maxAnnotations}&expanded=true`
-  hlib.getById('facetResultsLink').innerHTML = `<a target="_results" href=${facetLink}>click to review copied annotations</a>`
+  async function delayedClick() {
+    await hlib.delaySeconds(3)
+    const anchor = hlib.getById("checkSettingsAnchor") as HTMLAnchorElement
+    anchor.href = facetLink
+    anchor.click()
+  }
+  const { 
+    sourceDomain, 
+    destinationDomain,
+    destinationGroup } = gatherInput()
+    const domain = destinationDomain ? destinationDomain : sourceDomain
+  const facetLink = `https://jonudell.info/h/facet/?group=${destinationGroup}&wildcard_uri=${wildcardify(domain)}&max=${maxAnnotations}&expanded=true`
+  hlib.getById('facetResultsLink').innerHTML = `<a href="${facetLink}" target="_copyAnnotationsReview">click to review copied annotations</a>`
+  const facetSettingsLink = hlib.getById('facetSettingsLink') as HTMLElement
+  const anchor = facetSettingsLink.querySelector('a') as HTMLAnchorElement
+  anchor.onclick = delayedClick
 }
 
 // main entry point, wired to copy button
 async function copy() {
 
-  const { sourceDomainElement, sourceGroup, destinationGroup } = validationHelper()
-  if (! validInput() ) {
-    return
-  }
+  const {
+    sourceDomain,
+    sourceGroup,
+    maxAnnotations
+    } = gatherInput()
 
   hlib.getById('fetchProgress').style.display = 'block'
     let params:any =  {
-    wildcard_uri: sourceDomainElement.value, //https://wisc.pb.unizin.org/*
+    wildcard_uri: wildcardify(sourceDomain),
     group: sourceGroup,
     max: maxAnnotations
   }
@@ -87,27 +120,38 @@ async function copy() {
 }
 
 function _copy(rows:any[]) {
+  function maybeSwapDomain(uri: string, sourceDomain: string, destinationDomain: string) {
+    if (destinationDomain) {
+      uri = uri.replace(sourceDomain, destinationDomain)
+    }
+  return uri
+  }
   const progressElement = document.querySelector('#postProgress') as HTMLElement
   progressElement.style.display = 'block'
   const counterElement = progressElement.querySelector('.total') as HTMLElement
   counterElement.innerText = rows.length.toString()
-  const sourceDomainElement = hlib.getById('sourceDomainForm') as HTMLInputElement
-  const destinationGroup = hlib.getSelectedGroup('destinationGroupsList')
-  const userForm = hlib.getById('userForm') as HTMLInputElement
-  const username = userForm.value
+  const {
+    user,
+    sourceDomain,
+    destinationDomain,
+    sourceGroup,
+    destinationGroup,
+    maxAnnotations
+    } = gatherInput()
   for (let i = 0; i < rows.length; i++) {
-    const row = rows[i]
-    const originalUser = row.user
-    const originalCreated = row.created.slice(0,10)
+    const anno = hlib.parseAnnotation(rows[i])
+    const originalUser = anno.user
+    const originalCreated = anno.updated.slice(0,10)
+    const uri = maybeSwapDomain(anno.url, sourceDomain, destinationDomain)
     const payload = {
-      user: `${username}@hypothes.is`,
-      uri: row.uri,
-      tags: row.tags,
-      text: row.text += `<hr>Copied from ${sourceDomainElement.value} (${originalUser}, ${originalCreated})`,
-      target: row.target,
+      user: `${user}@hypothes.is`,
+      uri: uri,
+      tags: anno.tags,
+      text: anno.text += `<hr>Copied from ${sourceDomain} (author ${originalUser} on ${originalCreated})`,
+      target: anno.target,
       group: destinationGroup,
-      permissions: hlib.createPermissions(username, destinationGroup),
-      document: row.document,
+      permissions: hlib.createPermissions(user, destinationGroup),
+      document: anno.document
     }
     console.log(`copying to ${payload.uri}`)
     postAnnotation(payload, hlib.getToken())
@@ -148,28 +192,61 @@ function adjustGroupPicker(groupContainer:string, label:string, id:string, messa
   picker.querySelector('.formMessage')!.innerHTML = message
 }
 
-function validationHelper() : any {
+function gatherInput() : userInput {
   const sourceDomainElement = hlib.getById('sourceDomainForm') as HTMLInputElement
+  const sourceDomain = sourceDomainElement.value
+  const destinationDomainElement = hlib.getById('destinationDomainForm') as HTMLInputElement
+  const destinationDomain = destinationDomainElement.value
   const sourceGroup = hlib.getSelectedGroup('sourceGroupsList')
   const destinationGroup = hlib.getSelectedGroup('destinationGroupsList')
   const maxAnnotationsForm = hlib.getById('maxAnnotationsForm') as HTMLInputElement
   maxAnnotations = parseInt(maxAnnotationsForm.value)
-  return { sourceDomainElement, sourceGroup, destinationGroup, maxAnnotations }
+  const userForm = hlib.getById('userForm') as HTMLInputElement
+  const user = userForm.value
+  return { 
+    user: user,
+    sourceDomain: sourceDomain,
+    destinationDomain: destinationDomain,
+    sourceGroup, 
+    destinationGroup, 
+    maxAnnotations 
+  }
+}
+
+function wildcardify(domain: string) {
+  return httpsify(slashstarify(domain))
+}
+
+function httpsify(domain: string) {
+  if (domain && !domain.startsWith('https://')) {
+      domain = 'https://' + domain;
+  }
+  return domain
+}
+function slashstarify(domain: string) {
+  if (!domain.endsWith('/*')) {
+      domain += '/*';
+  }
+  return domain
 }
 
 function validInput() {
-  const { sourceDomainElement, sourceGroup, destinationGroup } = validationHelper()
-  const userForm = hlib.getById('userForm') as HTMLInputElement
-  const username = userForm.value
-  if (!username) {
+  const {
+    user,
+    sourceDomain,
+    destinationDomain,
+    sourceGroup,
+    destinationGroup,
+    } = gatherInput()
+  if (!user) {
     alert('Please provide the Hypothesis username associated with this API token.')
     return false
   }
-  if (! sourceDomainElement.value.endsWith('/*')) {
-    alert('sourceDomain must be a wildcard_uri like http://example.com/*')
+  if (! sourceDomain) {
+    alert('Please provide a source domain.')
     return false
   }
-  if ( sourceGroup === destinationGroup ) {
+  if ( (sourceGroup === destinationGroup) && ! destinationDomain ) {
     alert('Please choose a destination group different from the source group.')
     return false
   }
