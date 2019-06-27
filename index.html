@@ -31,6 +31,10 @@
       width: 20em;
     }
 
+    .formMessage {
+      font-style: italic;
+    }
+
   </style>
 </head>
 
@@ -39,7 +43,7 @@
   <div id="formContainer">
 
     <h1>
-     Copy Hypothesis annotations from one group to another
+     Copy Hypothesis annotations
     </h1>
 
     <div class="formField" id="userContainer"></div>
@@ -74,10 +78,10 @@
       <p>
         This tool copies annotations from one group to another, and optionally also from one domain to another.
         Only top-level annotations will be copied, replies are ignored.
+        Only maxAnnotations will be copied, the default is 2 as a safety check.
         The Hypothesis username you provide will be the creator of copied annotations.
-        If the source group is not Public, the Hypothesis user must be a member to 
-        read annotations from it. Likewise, if the destination group is not Public, 
-        the Hypothesis user must be a member to write annotations to it.
+        If the source or destination group is not Public, the Hypothesis user must be a member to 
+        read from the soure or write to the destination.
       </p>
     </div>
 
