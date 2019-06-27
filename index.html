@@ -10,6 +10,10 @@
       width:600px;
     }
 
+    button {
+    margin-bottom: 8px;
+    }
+
     h1 {
       font-size: 14pt;
     }
@@ -21,6 +25,10 @@
 
     #fetchProgress, #postProgress {
       display: none;
+    }
+
+    #sourceDomainForm, #destinationDomainForm {
+      width: 20em;
     }
 
   </style>
@@ -43,6 +51,8 @@
     <div class="formField" id="limitContainer"></div>
     <div class="formField" id="userFilterContainer"></div>
 
+    <p>How to do it</p>
+
     <div><button id="checkSettingsButton" onclick="checkSettings()">1. check settings</button> <span id="facetSettingsLink"></span></div>
 
     <div style="display:flex" id="copyControl">
@@ -53,6 +63,8 @@
 
     <div><button id="checkResultsButton" onclick="checkResults()">3. check results</button> <span id="facetResultsLink"></span></div>
 
+    <div><button onclick="location.href=location.href" id="restart">restart</button></div>
+
     <p class="tokenReset">
       <a title="click to reset">reset API token</a>
     </p>
@@ -60,7 +72,7 @@
     <div class="help">
       <hr>
       <p>
-        This tool copies annotations from one group to another. 
+        This tool copies annotations from one group to another, and optionally also from one domain to another.
         Only top-level annotations will be copied, replies are ignored.
         The Hypothesis username you provide will be the creator of copied annotations.
         If the source group is not Public, the Hypothesis user must be a member to 
