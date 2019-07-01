@@ -147,7 +147,7 @@ function _copy(rows:any[]) {
       user: `${user}@hypothes.is`,
       uri: uri,
       tags: anno.tags,
-      text: anno.text += `<hr>Copied from ${sourceDomain} (author ${originalUser} on ${originalCreated})`,
+      text: anno.text, // += `<hr>Copied from ${sourceDomain} (author ${originalUser} on ${originalCreated})`,
       target: anno.target,
       group: destinationGroup,
       permissions: hlib.createPermissions(user, destinationGroup),
