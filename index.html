@@ -30,7 +30,9 @@
     #sourceDomainForm, #destinationDomainForm {
       width: 20em;
     }
-
+    .errorCounter {
+      display: none;
+    }
     .formMessage {
       font-style: italic;
     }
@@ -62,7 +64,7 @@
     <div style="display:flex" id="copyControl">
       <div> <button id="copyButton" onclick="copy()">2. copy notes</button></div>
       <div id="fetchProgress"> fetching annotations </span> </div>
-      <div id="postProgress"> copying annotations <span class="counter">0</span> of <span class="total">0</span> </div>
+      <div id="postProgress"> copying annotations <span class="copyCounter">0</span> of <span class="total">0</span> <span class="errorCounter">errors 0</span> </div>
     </div>
 
     <div><button id="checkResultsButton" onclick="checkResults()">3. check results</button> <span id="facetResultsLink"></span></div>

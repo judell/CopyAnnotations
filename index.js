@@ -53,12 +53,13 @@ async function copy() {
     let params = {
         wildcard_uri: wildcardify(sourceDomain),
         group: sourceGroup,
-        max: maxAnnotations
+        max: maxAnnotations,
+        _separate_replies: 'true'
     };
     const [annoRows, replyRows] = await hlib.search(params, 'fetchProgress');
     _copy(annoRows);
 }
-function _copy(rows) {
+async function _copy(rows) {
     function maybeSwapDomain(uri, sourceDomain, destinationDomain) {
         if (destinationDomain) {
             uri = uri.replace(sourceDomain, destinationDomain);
@@ -67,13 +68,17 @@ function _copy(rows) {
     }
     const progressElement = document.querySelector('#postProgress');
     progressElement.style.display = 'block';
-    const counterElement = progressElement.querySelector('.total');
-    counterElement.innerText = rows.length.toString();
-    const { user, sourceDomain, destinationDomain, sourceGroup, destinationGroup, maxAnnotations } = gatherInput();
+    const totalElement = progressElement.querySelector('.total');
+    totalElement.innerText = rows.length.toString();
+    let copyCount = 0;
+    let errorCount = 0;
+    const { user, sourceDomain, destinationDomain, destinationGroup, } = gatherInput();
+    const copyCounterElement = progressElement.querySelector('.copyCounter');
+    const errorCounterElement = progressElement.querySelector('.errorCounter');
     for (let i = 0; i < rows.length; i++) {
         const anno = hlib.parseAnnotation(rows[i]);
-        const originalUser = anno.user;
-        const originalCreated = anno.updated.slice(0, 10);
+        //const originalUser = anno.user
+        //const originalCreated = anno.updated.slice(0,10)
         const uri = maybeSwapDomain(anno.url, sourceDomain, destinationDomain);
         const payload = {
             user: `${user}@hypothes.is`,
@@ -85,33 +90,19 @@ function _copy(rows) {
             permissions: hlib.createPermissions(user, destinationGroup),
             document: anno.document
         };
-        console.log(`copying to ${payload.uri}`);
-        postAnnotation(payload, hlib.getToken());
-    }
-}
-function postAnnotation(payload, token) {
-    let multiplier = 50;
-    let millisecondsToDelay = maxAnnotations * multiplier;
-    let delay = Math.floor(Math.random() * Math.floor(millisecondsToDelay));
-    let group = payload.group;
-    setTimeout(function () {
-        hlib.postAnnotation(JSON.stringify(payload), token)
-            .then(data => {
-            const response = JSON.parse(data.response);
-            if (group === response.group) {
-                const counter = document.querySelector('#postProgress .counter');
-                let count = parseInt(counter.innerText);
-                count++;
-                counter.innerText = count.toString();
-            }
-            else {
-                console.log(`failure ${response}`);
-            }
+        await hlib.delaySeconds(.2);
+        hlib.postAnnotation(JSON.stringify(payload), hlib.getToken())
+            .then(_ => {
+            copyCount += 1;
+            copyCounterElement.innerText = copyCount.toString();
         })
             .catch(e => {
-            console.log(`exception ${e}`);
+            errorCounterElement.style.display = 'inline';
+            errorCount += 1;
+            errorCounterElement.innerText = `errors ${errorCount.toString()}`;
+            console.log(e);
         });
-    }, delay);
+    }
 }
 function adjustGroupPicker(groupContainer, label, id, message) {
     const picker = document.querySelector(groupContainer);
@@ -137,9 +128,9 @@ function gatherInput() {
         user: user,
         sourceDomain: sourceDomain,
         destinationDomain: destinationDomain,
-        sourceGroup,
-        destinationGroup,
-        maxAnnotations
+        sourceGroup: sourceGroup,
+        destinationGroup: destinationGroup,
+        maxAnnotations: maxAnnotations
     };
 }
 function wildcardify(domain) {

@@ -113,13 +113,14 @@ async function copy() {
     let params:any =  {
     wildcard_uri: wildcardify(sourceDomain),
     group: sourceGroup,
-    max: maxAnnotations
+    max: maxAnnotations,
+    _separate_replies: 'true'
   }
   const [annoRows, replyRows] = await hlib.search(params, 'fetchProgress')
   _copy(annoRows)
 }
 
-function _copy(rows:any[]) {
+async function _copy(rows:any[]) {
   function maybeSwapDomain(uri: string, sourceDomain: string, destinationDomain: string) {
     if (destinationDomain) {
       uri = uri.replace(sourceDomain, destinationDomain)
@@ -128,22 +129,24 @@ function _copy(rows:any[]) {
   }
   const progressElement = document.querySelector('#postProgress') as HTMLElement
   progressElement.style.display = 'block'
-  const counterElement = progressElement.querySelector('.total') as HTMLElement
-  counterElement.innerText = rows.length.toString()
+  const totalElement = progressElement.querySelector('.total') as HTMLElement
+  totalElement.innerText = rows.length.toString()
+  let copyCount = 0
+  let errorCount = 0
   const {
     user,
     sourceDomain,
     destinationDomain,
-    sourceGroup,
     destinationGroup,
-    maxAnnotations
     } = gatherInput()
-  for (let i = 0; i < rows.length; i++) {
-    const anno = hlib.parseAnnotation(rows[i])
-    const originalUser = anno.user
-    const originalCreated = anno.updated.slice(0,10)
-    const uri = maybeSwapDomain(anno.url, sourceDomain, destinationDomain)
-    const payload = {
+    const copyCounterElement = progressElement.querySelector('.copyCounter') as HTMLElement
+    const errorCounterElement = progressElement.querySelector('.errorCounter') as HTMLElement
+    for (let i = 0; i < rows.length; i++) {
+       const anno = hlib.parseAnnotation(rows[i])
+      //const originalUser = anno.user
+      //const originalCreated = anno.updated.slice(0,10)
+      const uri = maybeSwapDomain(anno.url, sourceDomain, destinationDomain)
+      const payload = {
       user: `${user}@hypothes.is`,
       uri: uri,
       tags: anno.tags,
@@ -152,34 +155,20 @@ function _copy(rows:any[]) {
       group: destinationGroup,
       permissions: hlib.createPermissions(user, destinationGroup),
       document: anno.document
-    }
-    console.log(`copying to ${payload.uri}`)
-    postAnnotation(payload, hlib.getToken())
-  }
-}
-
-function postAnnotation(payload:any, token:string) {
-  let multiplier = 50
-  let millisecondsToDelay = maxAnnotations * multiplier
-  let delay = Math.floor(Math.random() * Math.floor(millisecondsToDelay))
-  let group = payload.group
-  setTimeout(function() {
-    hlib.postAnnotation(JSON.stringify(payload), token)
-      .then(data => {
-        const response = JSON.parse(data.response)
-        if (group === response.group) { // the response is an object with a group property that matches the destination group
-          const counter = document.querySelector('#postProgress .counter') as HTMLElement
-          let count:number = parseInt(counter.innerText)
-          count++
-          counter.innerText = count.toString()
-        } else { // response was 200-299 but not the object we expected
-          console.log(`failure ${response}`)
-        }
+      }
+    await hlib.delaySeconds(.2)
+    hlib.postAnnotation(JSON.stringify(payload), hlib.getToken())
+      .then( _ => {
+        copyCount += 1
+        copyCounterElement.innerText = copyCount.toString()
       })
-      .catch( e => { 
-        console.log(`exception ${e}`)
-        })
-      }, delay)
+      .catch( e => {
+        errorCounterElement.style.display = 'inline'
+        errorCount += 1
+        errorCounterElement.innerText= `errors ${errorCount.toString()}`
+        console.log(e)
+      })
+  }
 }
 
 function adjustGroupPicker(groupContainer:string, label:string, id:string, message:string) {
@@ -207,9 +196,9 @@ function gatherInput() : userInput {
     user: user,
     sourceDomain: sourceDomain,
     destinationDomain: destinationDomain,
-    sourceGroup, 
-    destinationGroup, 
-    maxAnnotations 
+    sourceGroup: sourceGroup,
+    destinationGroup: destinationGroup,
+    maxAnnotations: maxAnnotations
   }
 }
 
