@@ -30,11 +30,17 @@
     #sourceDomainForm, #destinationDomainForm {
       width: 20em;
     }
+
     .errorCounter {
       display: none;
     }
+
     .formMessage {
       font-style: italic;
+    }
+
+    .lms-mode {
+      font-weight: normal;
     }
 
   </style>
@@ -45,17 +51,20 @@
   <div id="formContainer">
 
     <h1>
-     Copy Hypothesis annotations
+     Copy Hypothesis annotations</h1>
     </h1>
 
     <div class="formField" id="userContainer"></div>
+    <div class="formField">
+      <div id="lmsModeContainer"></div>
+      <div class="formMessage">Tick this box to copy only the specified user's notes</div>
+    </div>
     <div class="formField" id="tokenContainer"></div>
     <div class="formField" id="sourceDomainContainer"></div>
     <div class="formField" id="destinationDomainContainer"></div>
     <div class="formField" id="sourceGroupContainer"></div>
     <div class="formField" id="destinationGroupContainer"></div>
     <div class="formField" id="limitContainer"></div>
-    <div class="formField" id="userFilterContainer"></div>
 
     <p>How to do it</p>
 
@@ -83,7 +92,8 @@
         Only maxAnnotations will be copied, the default is 2 as a safety check.
         The Hypothesis username you provide will be the creator of copied annotations.
         If the source or destination group is not Public, the Hypothesis user must be a member to 
-        read from the source or write to the destination. 
+        read from the source or write to the destination. Tick lmsMode if you're a teacher copying your 
+        own prompts from one course group to another.
 
         More <a href="https://jonudell.info/h/tools.html">Hypothesis tools</a>.
       </p>
@@ -99,8 +109,6 @@
       hlib.manageTokenDisplayAndReset()
     }, 200)
   </script>
-  
-
 </body>
 
 </html>
